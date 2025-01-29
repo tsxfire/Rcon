@@ -1,0 +1,10 @@
+[
+    {
+      "type": "minecraft",
+      "host": "127.0.0.1",
+      "port": 25575,
+      "password": "your_password",
+      "retries": 3,
+      "retryInterval": 5000
+    }
+  ]

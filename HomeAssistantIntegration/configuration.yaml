@@ -1,0 +1,8 @@
+mqtt:
+  broker: 127.0.0.1
+
+sensor:
+  - platform: mqtt
+    name: "RCON Player Count"
+    state_topic: "rcon-monitor/player_count"
+    value_template: "{{ value_json.count }}"
