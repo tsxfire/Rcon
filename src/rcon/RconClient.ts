@@ -21,6 +21,7 @@ export class RconClient extends EventEmitter {
             password: this.config.password,
           });
           this.client.on('message', (msg: string) => this.handleMessage(msg));
+          this.client.on('error', (err) => console.error('Minecraft RCON error:', err));
           break;
         case 'ark':
           // Implement Ark RCON
