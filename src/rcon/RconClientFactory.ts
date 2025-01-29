@@ -9,8 +9,7 @@ export class RconClientFactory {
       case 'minecraft':
         return new MinecraftRconClient(config);
       case 'palworld':
-        // Implement later
-        throw new Error('Palworld implementation pending');
+        return new PalworldRconClient(config);
       case '7d2d':
         // Implement later
         throw new Error('7 Days to Die implementation pending');
