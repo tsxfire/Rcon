@@ -1,4 +1,3 @@
-// src/rcon/implementations/MinecraftRconClient.ts
 import { createClient, Client } from 'minecraft-protocol';
 import { BaseRconClient } from '../BaseRconClient';
 import { RconConfig } from '../types';
@@ -12,23 +11,18 @@ export class MinecraftRconClient extends BaseRconClient {
         host: this.config.host,
         port: this.config.port,
         username: 'RCON Bot',
-        rconPassword: this.config.password,
+        password: this.config.password, // Correct property
       });
 
       this.client.on('connect', () => {
         this.isConnected = true;
         this.retryCount = 0;
-        console.log(`Connected to Minecraft server at ${this.config.host}:${this.config.port}`);
-        this.emit('connected', this.config.host);
+        console.log(`Connected to ${this.config.host}:${this.config.port}`);
+        this.emit('connected');
       });
 
-      this.client.on('rcon_response', (response: string) => {
-        this.emit('response', response);
-      });
-
-      this.client.on('error', (err: Error) => {
-        console.error(`Minecraft RCON error: ${err.message}`);
-        this.scheduleReconnect();
+      this.client.on('message', (msg: string) => {
+        this.emit('message', msg);
       });
 
       this.client.on('end', () => {
@@ -38,24 +32,22 @@ export class MinecraftRconClient extends BaseRconClient {
       });
 
     } catch (err) {
-      console.error(`Minecraft connection failed: ${(err as Error).message}`);
+      console.error(`Connection failed: ${(err as Error).message}`);
       this.scheduleReconnect();
     }
   }
 
-// Change command sending method
-public async sendCommand(command: string): Promise<string> {
-  return new Promise((resolve) => {
-    this.client?.write('rcon', {
-      command: command
+  public async sendCommand(command: string): Promise<string> {
+    return new Promise((resolve) => {
+      if (!this.client) return resolve('');
+      
+      this.client.write('chat', {
+        message: command
+      });
+      
+      this.client.once('chat', (packet) => {
+        resolve(packet.message);
+      });
     });
-    
-    this.client?.once('rcon_response', resolve);
-  });
-}
-
-  public disconnect(): void {
-    this.client?.end();
-    this.isConnected = false;
   }
 }
