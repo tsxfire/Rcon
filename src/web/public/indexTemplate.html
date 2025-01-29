@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RCON Monitor</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Game Server Monitor</h1>
+    <div id="server-list"></div>
+    <div class="command-box">
+      <input type="text" id="command-input" placeholder="Enter RCON command">
+      <button onclick="sendCommand()">Send</button>
+      <div id="command-history"></div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
