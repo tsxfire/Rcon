@@ -1,9 +1,9 @@
 import EventEmitter from 'events';
-import { RCON } from 'minecraft-protocol';
-import { RconConfig } from './types';
+import { Client } from 'minecraft-protocol';  // Use the correct export
+import { RconConfig } from './types';  // We'll create this file
 
 export class RconClient extends EventEmitter {
-  private client: any;
+  private client: Client;  // Use Client type from minecraft-protocol
   private retryCount = 0;
   private isConnected = false;
 

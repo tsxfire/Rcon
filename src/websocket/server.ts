@@ -1,5 +1,5 @@
-import WebSocket, { WebSocketServer } from 'ws';
-import { RconClient, RconConfig } from '../rcon/RconClient';
+import { RconClient } from '../rcon/RconClient';
+import type { RconConfig } from '../rcon/types';  // Import from types.ts
 
 const wss = new WebSocketServer({ port: 8080 });
 const clients = new Set<WebSocket>();

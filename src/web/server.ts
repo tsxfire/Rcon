@@ -1,4 +1,5 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
+import { healthMonitor } from '../healthMonitor';  // Add this import
 import path from 'path';
 import { addRconClient } from '../websocket/server';
 
@@ -7,7 +8,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 // API endpoint to fetch server statuses
-app.get('/api/servers', (req, res) => {
+app.get('/api/servers', (req: Request, res: Response) => {
   const statuses = Array.from(healthMonitor.servers.values()).map(c => ({
     host: c.config.host,
     status: c.isConnected ? 'online' : 'offline'
