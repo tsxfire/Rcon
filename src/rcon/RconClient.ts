@@ -18,6 +18,7 @@ export class RconClient extends EventEmitter {
         // Use createClient with RCON options
         this.client = createClient({
           host: this.config.host,
+          username: 'bot',
           port: this.config.port,
           password: this.config.password
         });
