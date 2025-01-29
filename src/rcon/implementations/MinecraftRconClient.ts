@@ -36,7 +36,11 @@ export class MinecraftRconClient extends BaseRconClient {
       this.scheduleReconnect();
     }
   }
-
+  // Add missing disconnect implementation
+  public disconnect(): void {
+    this.client?.end();
+    this.isConnected = false;
+  }
   public async sendCommand(command: string): Promise<string> {
     return new Promise((resolve) => {
       if (!this.client) return resolve('');

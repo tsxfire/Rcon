@@ -1,6 +1,6 @@
-// src/rcon/RconClientFactory.ts
 import { BaseRconClient } from './BaseRconClient';
 import { MinecraftRconClient } from './implementations/MinecraftRconClient';
+import { PalworldRconClient } from './implementations/PalworldRconClient';
 import { RconConfig } from './types';
 
 export class RconClientFactory {

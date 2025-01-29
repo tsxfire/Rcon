@@ -1,9 +1,8 @@
-// src/rcon/BaseRconClient.ts
 import { EventEmitter } from 'events';
 import { RconConfig } from './types';
 
 export abstract class BaseRconClient extends EventEmitter {
-  protected config: RconConfig;
+  public config: RconConfig; // Changed from protected to public
   protected retryCount = 0;
   protected isConnected = false;
 
@@ -15,7 +14,7 @@ export abstract class BaseRconClient extends EventEmitter {
 
   protected abstract connect(): Promise<void>;
   public abstract sendCommand(command: string): Promise<string>;
-  public abstract disconnect(): void;
+  public abstract disconnect(): void; // Add abstract disconnect
   
   protected scheduleReconnect() {
     if (this.retryCount >= (this.config.retries ?? 3)) {
