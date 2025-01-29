@@ -1,11 +1,10 @@
 import { EventEmitter } from 'events';
-import { RCON } from 'minecraft-protocol';
+import { Client, createClient } from 'minecraft-protocol';
 import { RconConfig } from './types';
 
 export class RconClient extends EventEmitter {
-  private client: RCON | null = null;
+  private client: Client | null = null;
   private retryCount = 0;
-  private connectionAttempts = 0;
   private isConnected = false;
 
   constructor(public config: RconConfig) {
@@ -63,7 +62,7 @@ export class RconClient extends EventEmitter {
   }
 
   private scheduleReconnect() {
-    if (this.retryCount >= this.config.retries ?? 3) {
+    if (this.retryCount >= (this.config.retries ?? 3)) {
       console.error(`Max retries reached for ${this.config.host}`);
       return;
     }

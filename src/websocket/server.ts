@@ -14,7 +14,7 @@ export function addRconClient(config: RconClient['config']) {
   });
 }
 
-function broadcast(event: string, data: object) {
+export function broadcast(...) {
   clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({ event, data }));

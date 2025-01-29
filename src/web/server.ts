@@ -1,4 +1,4 @@
-import { RconClient } from './rcon/RconClient';
+import { RconClient } from '../rcon/RconClient';
 
 export class HealthMonitor {
   public servers = new Map<string, RconClient>();
