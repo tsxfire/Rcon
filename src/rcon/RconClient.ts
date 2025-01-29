@@ -20,7 +20,7 @@ export class RconClient extends EventEmitter {
           host: this.config.host,
           port: this.config.port,
           password: this.config.password,
-          rcon: true
+          rcon: true,
           connectTimeout: 5000
         });
 
