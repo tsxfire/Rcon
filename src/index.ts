@@ -1,22 +1,19 @@
-import { addRconClient } from './websocket/server';
+import { RconClientFactory } from './rcon/RconClientFactory';
 import servers from '../config/servers.json';
 
-interface ServerConfig {
-  type: string;
-  host: string;
-  port: number;
-  password: string;
-  retries?: number;
-  retryInterval?: number;
-}
+// Remove the old ServerConfig interface (now in types.ts)
 
-try {
-  servers.forEach((server: ServerConfig) => {
+servers.forEach((server) => {
+  try {
     console.log(`Connecting to ${server.host}:${server.port}...`);
-    addRconClient(server);
-  });
-  console.log('RCON Monitor started successfully');
-} catch (err) {
-  console.error('Failed to start RCON Monitor:', err);
-  process.exit(1);
-}
+    const client = RconClientFactory.createClient(server);
+    client.on('connected', () => {
+      console.log(`Successfully connected to ${server.host}`);
+    });
+    client.on('error', (err) => {
+      console.error(`Connection error (${server.host}):`, err);
+    });
+  } catch (err) {
+    console.error(`Failed to initialize client for ${server.host}:`, err);
+  }
+});
