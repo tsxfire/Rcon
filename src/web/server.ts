@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { RconClientFactory } from '../rcon/RconClientFactory';
 import { healthMonitor } from '../healthMonitor';
+import { broadcast } from '../websocket/server';
 
 const wss = new WebSocketServer({ port: 8080 });
 const clients = new Set<WebSocket>();

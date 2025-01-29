@@ -1,5 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import { RconClient } from '../rcon/RconClient';
+import { RconClientFactory } from '../rcon/RconClientFactory';
 import { healthMonitor } from '../healthMonitor';
 
 const wss = new WebSocketServer({ port: 8080 });

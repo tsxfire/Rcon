@@ -13,7 +13,6 @@ export class MinecraftRconClient extends BaseRconClient {
         port: this.config.port,
         username: 'RCON Bot',
         rconPassword: this.config.password,
-        accessToken: ''
       });
 
       this.client.on('connect', () => {
@@ -44,27 +43,16 @@ export class MinecraftRconClient extends BaseRconClient {
     }
   }
 
-  public async sendCommand(command: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (!this.client || !this.isConnected) {
-        return reject('Not connected to Minecraft server');
-      }
-
-      const timeout = setTimeout(() => {
-        reject('Command timeout');
-      }, 10000);
-
-      this.client?.once('rcon_response', (response: string) => {
-        clearTimeout(timeout);
-        resolve(response);
-      });
-
-      this.client?.send('rcon', {
-        command: command,
-        commandType: 2
-      });
+// Change command sending method
+public async sendCommand(command: string): Promise<string> {
+  return new Promise((resolve) => {
+    this.client?.write('rcon', {
+      command: command
     });
-  }
+    
+    this.client?.once('rcon_response', resolve);
+  });
+}
 
   public disconnect(): void {
     this.client?.end();
