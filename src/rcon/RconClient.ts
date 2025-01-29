@@ -1,10 +1,11 @@
-import EventEmitter from 'events';
-import { Client } from 'minecraft-protocol';  // Use the correct export
-import { RconConfig } from './types';  // We'll create this file
+import { EventEmitter } from 'events';
+import { RCON } from 'minecraft-protocol';
+import { RconConfig } from './types';
 
 export class RconClient extends EventEmitter {
-  private client: Client;  // Use Client type from minecraft-protocol
+  private client: RCON | null = null;
   private retryCount = 0;
+  private connectionAttempts = 0;
   private isConnected = false;
 
   constructor(public config: RconConfig) {
@@ -14,32 +15,75 @@ export class RconClient extends EventEmitter {
 
   private async connect() {
     try {
-      switch (this.config.type) {
-        case 'minecraft':
-          this.client = new RCON(this.config.host, {
-            port: this.config.port,
-            password: this.config.password,
-          });
-          this.client.on('message', (msg: string) => this.handleMessage(msg));
-          this.client.on('error', (err) => console.error('Minecraft RCON error:', err));
-          break;
-        case 'ark':
-          // Implement Ark RCON
-          break;
+      if (this.config.type === 'minecraft') {
+        this.client = new RCON({
+          host: this.config.host,
+          port: this.config.port,
+          password: this.config.password,
+        });
+
+        // Set up event handlers
+        this.client.on('response', (msg: string) => {
+          this.handleMessage(msg);
+        });
+
+        this.client.on('error', (err: Error) => {
+          console.error(`RCON error (${this.config.host}):`, err.message);
+          this.scheduleReconnect();
+        });
+
+        this.client.on('end', () => {
+          this.isConnected = false;
+          this.emit('disconnected', this.config.host);
+          this.scheduleReconnect();
+        });
+
+        await this.client.connect();
+        this.isConnected = true;
+        this.retryCount = 0;
+        console.log(`Connected to ${this.config.host}:${this.config.port}`);
+        this.emit('connected', this.config.host);
       }
-      this.emit('connected', this.config.host);
     } catch (err) {
+      console.error(`Connection failed (${this.config.host}):`, (err as Error).message);
       this.scheduleReconnect();
     }
   }
 
   private handleMessage(message: string) {
-    if (message.includes('joined')) this.emit('player_join', message);
+    console.log(`Received from ${this.config.host}:`, message);
+    // Example: Handle player join events
+    if (message.includes('joined the game')) {
+      const player = message.split(' ')[0];
+      this.emit('player_join', { 
+        server: this.config.host,
+        player: player
+      });
+    }
   }
 
   private scheduleReconnect() {
-    if (this.retryCount >= this.config.retries!) return;
-    setTimeout(() => this.connect(), this.config.retryInterval!);
+    if (this.retryCount >= this.config.retries ?? 3) {
+      console.error(`Max retries reached for ${this.config.host}`);
+      return;
+    }
+
+    const baseDelay = this.config.retryInterval ?? 5000;
+    const delay = baseDelay * Math.pow(2, this.retryCount);
     this.retryCount++;
+    
+    console.log(`Reconnecting to ${this.config.host} in ${delay}ms...`);
+    setTimeout(() => this.connect(), delay);
+  }
+
+  public get connectionStatus(): string {
+    return this.isConnected ? 'connected' : 'disconnected';
+  }
+
+  public async sendCommand(command: string): Promise<string> {
+    if (!this.client || !this.isConnected) {
+      throw new Error('Not connected to server');
+    }
+    return this.client.command(command);
   }
 }

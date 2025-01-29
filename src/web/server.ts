@@ -1,22 +1,11 @@
-import express, { Request, Response } from 'express';
-import { healthMonitor } from '../healthMonitor';  // Add this import
-import path from 'path';
-import { addRconClient } from '../websocket/server';
+import { RconClient } from './rcon/RconClient';
 
-const app = express();
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+export class HealthMonitor {
+  public servers = new Map<string, RconClient>();
 
-// API endpoint to fetch server statuses
-app.get('/api/servers', (req: Request, res: Response) => {
-  const statuses = Array.from(healthMonitor.servers.values()).map(c => ({
-    host: c.config.host,
-    status: c.isConnected ? 'online' : 'offline'
-  }));
-  res.json(statuses);
-});
+  addServer(client: RconClient) {
+    this.servers.set(client.config.host, client);
+  }
+}
 
-// Start server
-app.listen(3000, () => {
-  console.log('Web dashboard running on http://localhost:3000');
-});
+export const healthMonitor = new HealthMonitor();

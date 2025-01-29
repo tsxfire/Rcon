@@ -4,6 +4,7 @@
     "noImplicitAny": false,  // Temporarily disable for migration
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "strictPropertyInitialization": false, // Disable strict init checks
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "./dist",
